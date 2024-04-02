@@ -7,7 +7,9 @@ edition = "2021"
 name = "operator"
 path = "src/bin/main.rs"
 
-
+[[bin]]
+name = "cli"
+path = "src/bin/cli.rs"
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
@@ -20,3 +22,4 @@ schemars = "0.8"
 anyhow = "1"
 thiserror = "1"
 log = "0.4"
+clap = { version = "4", features = ["derive"] }
