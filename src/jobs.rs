@@ -14,7 +14,7 @@ pub async fn register_workers(
 ) -> Result<Job, Error> {
     let init_job = Job {
         metadata: ObjectMeta {
-            generate_name: Some("working-init-".to_owned()),
+            generate_name: Some(format!("{name}-init")),
             ..ObjectMeta::default()
         },
         spec: Some(JobSpec {
@@ -22,7 +22,7 @@ pub async fn register_workers(
                 spec: Some(PodSpec {
                     restart_policy: Some("OnFailure".to_owned()),
                     containers: vec![Container {
-                        name: format!("{name}-init-worker"),
+                        name: format!("{name}-init-worker-"),
                         image: Some("citusdata/citus:12.1".to_owned()),
                         command: Some(vec![
                             "bash".to_owned(),
@@ -41,7 +41,7 @@ pub async fn register_workers(
                         env: Some(vec![
                             EnvVar {
                                 name: "PGHOST".to_owned(),
-                                value: Some(format!("{name}")),
+                                value: Some(format!("{name}.{namespace}")),
                                 ..EnvVar::default()
                             },
                             EnvVar {
