@@ -3,6 +3,12 @@ name = "example-citus-operator"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "operator"
+path = "src/bin/main.rs"
+
+
+
 [dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 kube = { version = "0.88", default-features = true, features = ["derive", "runtime"] }

@@ -11,14 +11,8 @@ use kube::runtime::Controller;
 use kube::runtime::controller::Action;
 use kube::runtime::watcher::Config;
 
-use crate::cluster::{add_finalizer, delete_finalizer};
-use crate::crd::CitusCluster;
-
-mod cluster;
-mod crd;
-mod master;
-mod workers;
-mod jobs;
+use example_citus_operator::cluster;
+use example_citus_operator::crd::CitusCluster;
 
 // use tracing::*;
 
@@ -73,13 +67,13 @@ async fn reconcile(cc: Arc<CitusCluster>, context: Arc<ContextData>) -> Result<A
     let name = cc.name_any();
     match determine_action(&cc) {
         ClusterAction::Create => {
-            add_finalizer(client.clone(), &name, &namespace).await?;
+            cluster::add_finalizer(client.clone(), &name, &namespace).await?;
             cluster::deploy(client, &name, cc.spec.workers, &namespace).await?;
             Ok(Action::requeue(Duration::from_secs(10)))
         }
         ClusterAction::Delete => {
             cluster::delete(client.clone(), &name, &namespace).await?;
-            delete_finalizer(client, &name, &namespace).await?;
+            cluster::delete_finalizer(client, &name, &namespace).await?;
             Ok(Action::await_change())
         }
         ClusterAction::NoOp => Ok(Action::requeue(Duration::from_secs(10))),

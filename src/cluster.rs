@@ -1,11 +1,6 @@
-use k8s_openapi::api::apps::v1::{Deployment, StatefulSet, StatefulSetSpec};
-use k8s_openapi::api::core::v1::{
-    Container, ContainerPort, EnvVar, PodSpec, PodTemplateSpec, Service, ServicePort, ServiceSpec,
-};
-use k8s_openapi::apimachinery::pkg::apis::meta::v1::LabelSelector;
-use k8s_openapi::apimachinery::pkg::util::intstr::IntOrString;
+use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
 use kube::{Api, Client, Error};
-use kube::api::{DeleteParams, ObjectMeta, Patch, PatchParams, PostParams};
+use kube::api::{Patch, PatchParams};
 use serde_json::{json, Value};
 
 use crate::{jobs, master, workers};
