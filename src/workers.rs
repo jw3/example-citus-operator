@@ -18,6 +18,9 @@ pub async fn deploy(
     let mut worker_labels: BTreeMap<String, String> = BTreeMap::new();
     worker_labels.insert("app".to_owned(), name.to_owned());
 
+    let mut worker_node_selector: BTreeMap<String, String> = BTreeMap::new();
+    worker_node_selector.insert("citus-cluster-tag".to_owned(), "worker".to_owned());
+
     let ss: StatefulSet = StatefulSet {
         metadata: ObjectMeta {
             name: Some(qname(name)),
@@ -34,6 +37,7 @@ pub async fn deploy(
             },
             template: PodTemplateSpec {
                 spec: Some(PodSpec {
+                    node_selector: Some(worker_node_selector),
                     containers: vec![Container {
                         name: "worker".to_owned(),
                         image: Some("citusdata/citus:12.1".to_owned()),

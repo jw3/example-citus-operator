@@ -6,13 +6,16 @@ use k8s_openapi::api::core::v1::{
 };
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta};
 use k8s_openapi::apimachinery::pkg::util::intstr::IntOrString;
-use kube::{Api, Client, Error};
 use kube::api::{DeleteParams, PostParams};
+use kube::{Api, Client, Error};
 
 pub async fn deploy(client: Client, name: &str, namespace: &str) -> Result<Deployment, Error> {
     let mut master_labels: BTreeMap<String, String> = BTreeMap::new();
     master_labels.insert("app".to_owned(), name.to_owned());
     master_labels.insert("node".to_owned(), "master".to_owned());
+
+    let mut master_node_selector: BTreeMap<String, String> = BTreeMap::new();
+    master_node_selector.insert("citus-cluster-tag".to_owned(), "master".to_owned());
 
     let deployment: Deployment = Deployment {
         metadata: ObjectMeta {
@@ -29,6 +32,7 @@ pub async fn deploy(client: Client, name: &str, namespace: &str) -> Result<Deplo
             },
             template: PodTemplateSpec {
                 spec: Some(PodSpec {
+                    node_selector: Some(master_node_selector),
                     containers: vec![Container {
                         name: name.to_owned(),
                         image: Some("citusdata/citus:12.1".to_owned()),
