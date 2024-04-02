@@ -1,11 +1,10 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use futures::{StreamExt, TryStreamExt};
+use futures::StreamExt;
 use kube::{
     api::{Api, ResourceExt},
     Client,
-    CustomResourceExt, runtime::WatchStreamExt,
 };
 use kube::Resource;
 use kube::runtime::Controller;
@@ -17,6 +16,9 @@ use crate::crd::CitusCluster;
 
 mod cluster;
 mod crd;
+mod master;
+mod workers;
+mod jobs;
 
 // use tracing::*;
 
