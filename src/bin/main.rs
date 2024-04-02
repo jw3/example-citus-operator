@@ -55,7 +55,7 @@ enum ClusterAction {
 }
 
 async fn reconcile(cc: Arc<CitusCluster>, context: Arc<ContextData>) -> Result<Action, Error> {
-    let client: Client = context.client.clone(); // The `Client` is shared -> a clone from the reference is obtained
+    let client: Client = context.client.clone();
     let namespace: String = match cc.namespace() {
         None => {
             return Err(Error::UserInputError(
