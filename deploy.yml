@@ -1,0 +1,7 @@
+---
+apiVersion: jw3.xyz/v1alpha1
+kind: CitusCluster
+metadata:
+  name: my-citus-cluster
+spec:
+  workers: 2
