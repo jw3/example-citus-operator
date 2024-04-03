@@ -4,6 +4,7 @@ use kube::{Api, Client};
 use kube::api::PostParams;
 
 use example_citus_operator::crd::{CitusCluster, CitusClusterSpec};
+use example_citus_operator::storage;
 
 #[derive(Clone, Debug, Parser)]
 struct Opts {
@@ -28,12 +29,20 @@ struct CreateOpts {
     /// Number of workers
     #[clap(short, long, default_value = "1")]
     workers: usize,
+
+    /// Storage volume size for each worker, in GB
+    #[clap(long, default_value = "1")]
+    worker_storage: usize,
 }
 
 #[derive(Clone, Debug, Parser)]
 struct DeleteOpts {
     /// Name of the cluster
     name: String,
+
+    /// Delete associated persistent storage
+    #[clap(long)]
+    purge: bool,
 }
 
 #[tokio::main]
@@ -55,6 +64,7 @@ async fn main() {
                         },
                         spec: CitusClusterSpec {
                             workers: c.workers as i32,
+                            worker_storage: c.worker_storage,
                         },
                     },
                 )
@@ -66,6 +76,12 @@ async fn main() {
                 .delete(&c.name, &Default::default())
                 .await
                 .expect("delete");
+
+            if c.purge {
+                storage::delete_storage(client.clone(), &c.name, &opts.namespace)
+                    .await
+                    .expect("purge");
+            }
         }
     }
 }

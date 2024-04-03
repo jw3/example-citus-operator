@@ -33,3 +33,5 @@ spec:
                   type: string
                 workers:
                   type: integer
+                worker_storage:
+                  type: integer

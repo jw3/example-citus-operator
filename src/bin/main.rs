@@ -68,7 +68,14 @@ async fn reconcile(cc: Arc<CitusCluster>, context: Arc<ContextData>) -> Result<A
     match determine_action(&cc) {
         ClusterAction::Create => {
             cluster::add_finalizer(client.clone(), &name, &namespace).await?;
-            cluster::deploy(client, &name, cc.spec.workers, &namespace).await?;
+            cluster::deploy(
+                client,
+                &name,
+                cc.spec.workers,
+                cc.spec.worker_storage,
+                &namespace,
+            )
+            .await?;
             Ok(Action::requeue(Duration::from_secs(10)))
         }
         ClusterAction::Delete => {

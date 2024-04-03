@@ -12,10 +12,12 @@ pub async fn deploy(
     client: Client,
     name: &str,
     num_workers: i32,
+    worker_storage: usize,
     namespace: &str,
 ) -> Result<CitusDeployment, Error> {
     let master = master::deploy(client.clone(), name, namespace).await?;
-    let workers = workers::deploy(client.clone(), name, num_workers, namespace).await?;
+    let workers =
+        workers::deploy(client.clone(), name, num_workers, worker_storage, namespace).await?;
     jobs::register_workers(client.clone(), name, num_workers, namespace).await?;
 
     master::expose(client.clone(), name, namespace).await?;

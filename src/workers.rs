@@ -3,16 +3,20 @@ use std::collections::BTreeMap;
 use k8s_openapi::api::apps::v1::{StatefulSet, StatefulSetSpec};
 use k8s_openapi::api::core::v1::{
     Container, ContainerPort, EnvVar, PodSpec, PodTemplateSpec, Service, ServicePort, ServiceSpec,
+    VolumeMount,
 };
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta};
 use k8s_openapi::apimachinery::pkg::util::intstr::IntOrString;
 use kube::{Api, Client, Error};
 use kube::api::{DeleteParams, PostParams};
 
+use crate::storage;
+
 pub async fn deploy(
     client: Client,
     name: &str,
     cnt: i32,
+    storage: usize,
     namespace: &str,
 ) -> Result<StatefulSet, Error> {
     let mut worker_labels: BTreeMap<String, String> = BTreeMap::new();
@@ -51,6 +55,11 @@ pub async fn deploy(
                             value: Some("yourpassword".to_owned()),
                             ..EnvVar::default()
                         }]),
+                        volume_mounts: Some(vec![VolumeMount {
+                            mount_path: "/var/lib/postgresql/data".to_owned(),
+                            name: name.to_owned(),
+                            ..Default::default()
+                        }]),
                         ..Container::default()
                     }],
                     ..PodSpec::default()
@@ -60,6 +69,7 @@ pub async fn deploy(
                     ..ObjectMeta::default()
                 }),
             },
+            volume_claim_templates: Some(vec![storage::volume_claim_template(name, storage)]),
             ..StatefulSetSpec::default()
         }),
         ..StatefulSet::default()

@@ -22,7 +22,7 @@ pub async fn register_workers(
                 spec: Some(PodSpec {
                     restart_policy: Some("OnFailure".to_owned()),
                     containers: vec![Container {
-                        name: format!("{name}-init-worker-"),
+                        name: format!("{name}-init-worker"),
                         image: Some("citusdata/citus:12.1".to_owned()),
                         command: Some(vec![
                             "bash".to_owned(),
